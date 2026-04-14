@@ -1,154 +1,149 @@
-# 🚀 AI Resume Analyzer | ATS Simulator (SaaS)
+# 🚀 AI Resume Analyzer
 
-An AI-powered web application that analyzes resumes, simulates ATS (Applicant Tracking System) scoring, and provides intelligent, context-aware career guidance through a ChatGPT-like assistant. It helps students and job seekers optimize their resumes by matching them with job descriptions, identifying missing skills, and delivering actionable, real-world improvement insights — similar to modern ATS tools used by companies.
-
-
----
-
-## 🔥 Key Features
-
-### 📄 Resume Analysis
-
-* Upload PDF resumes
-* Extract and analyze resume content
-* Real-time ATS scoring (0–100)
-
-### 🎯 ATS Simulation Engine
-
-* Dynamic keyword extraction
-* Match resume with job descriptions
-* Identify missing skills and keywords
-* Section detection (Education, Experience, Projects, Skills)
-
-### 🤖 AI Career Assistant (ChatGPT-like)
-
-* Multi-chat system with history
-* Context-aware responses (resume + job description)
-* Smart suggestions for resume improvement
-* Interview preparation guidance
-
-### 📊 Interactive Dashboard
-
-* Clean SaaS-style UI (white theme)
-* ATS score visualization (progress bars / charts)
-* Skills & missing skills tags
-* Suggestions and improvement insights
-
-### 🔐 Authentication System
-
-* Email + password login/signup
-* Session management
-* Protected dashboard routes
-
-### ⚡ “Try Before Login” Experience
-
-* Upload resume without login
-* Get instant preview analysis
-* Unlock full report after sign-in
+A modern AI-powered resume toolkit built for job seekers and career builders. The platform combines ATS-style analysis, resume scoring, PDF reporting, and an AI career coach into a polished React + Flask application.
 
 ---
 
-## 🛠️ Tech Stack
+## Project Overview
 
-**Frontend:**
-
-* React.js (Vite)
-* HTML5, CSS3, JavaScript
-* Modern UI/UX (SaaS Design)
-
-**Backend / Cloud:**
-
-* 
-* 
-
-**AI & Processing:**
-
-* Resume parsing (PDF)
-* Keyword extraction logic
-* AI/LLM integration (chat assistant)
+AI Resume Analyzer is a full-stack portfolio application that helps users evaluate resumes against job descriptions, identify skill gaps, and get AI-generated career guidance. The product includes secure email/password authentication, resume upload, ATS scoring, AI feedback, and a chat-based assistant for interview and resume support.
 
 ---
 
-## 🎨 UI/UX Highlights
+## Key Features
 
-* Clean white SaaS interface (inspired by Stripe / Enhancv)
-* Responsive design (mobile + desktop)
-* Smooth animations & transitions
-* ChatGPT-like chat experience
-* Card-based dashboard layout
-
----
-
-## 🚀 How It Works
-
-1. Upload your resume (PDF)
-2. Paste job description (optional)
-3. Get ATS score & analysis
-4. Identify missing skills & improvements
-5. Use AI assistant for guidance
+- **Resume upload** with PDF support and manual text entry fallback
+- **ATS-style scoring** and keyword matching for resume content
+- **Job description analysis** to compare resumes against target roles
+- **AI career coach** with chat history, voice input, and response streaming
+- **Protected routes** for dashboard, analysis, chat, and settings
+- **Multi-role comparison** and role-specific resume insights
+- **Downloadable PDF report** generation from analysis results
+- **Local auth** using Flask, SQLite, and secure password hashing
 
 ---
 
-## 📸 Screenshots
+## Tech Stack
 
-> *(Screenshots)*
+**Frontend**
 
-* Landing Page
-* Dashboard
-* Resume Analysis Result
-* AI Chat Assistant
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- Radix UI
+- React Router DOM
+- TanStack React Query
+- Sonner notifications
+- PDF.js and jsPDF for PDF handling and report export
+
+**Backend**
+
+- Python
+- Flask
+- Flask-CORS
+- Werkzeug security
+- Static file serving for production
+
+**Database**
+
+- SQLite
+- Local user authentication table
+
+**AI**
+
+- Supabase Edge Functions for AI resume analysis and career chat
+- Chat assistant with resume context and streaming responses
+- AI feedback pipeline connected from frontend to Supabase functions
 
 ---
 
-## ⚙️ Installation & Setup
+## UI/UX Highlights
+
+- Clean, modern SaaS-style dashboard experience
+- Responsive layout for desktop and mobile screens
+- Sidebar navigation with protected workspace pages
+- Smooth animated loading states and toast feedback
+- Card-based resume insights and chart visualizations
+- AI chat interface with quick prompts and export capabilities
+
+---
+
+## How It Works
+
+1. Open the landing page and create an account or log in.
+2. Upload a resume PDF or paste resume text directly.
+3. Optionally paste a target job description for better matching.
+4. Review ATS scoring, skill gap analysis, and multi-role recommendations.
+5. Use the AI Career Assistant to refine resume language, practice interviews, and get career guidance.
+
+---
+
+## Installation & Setup
+
+### Frontend
 
 ```bash
-# Clone the repository
 git clone https://github.com/santoshbehera01/AI-Resume-Analyzer.git
-
-# Navigate to project folder
-cd AI-Resume-Analyzer
-
-# Install dependencies
+cd "AI Resume Analyzer"
 npm install
+```
 
-# Run the development server
+Create a `.env` file in the project root and add your Supabase values:
+
+```env
+VITE_SUPABASE_URL="https://your-supabase-url"
+VITE_SUPABASE_PUBLISHABLE_KEY="your-supabase-publishable-key"
+```
+
+Start the frontend server:
+
+```bash
 npm run dev
 ```
 
----
+### Backend
 
-## 🎯 Use Cases
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install flask flask-cors werkzeug
+python app.py
+```
 
-* Students preparing resumes for internships
-* Job seekers optimizing resumes for ATS
-* Practicing interview preparation with AI
-* Understanding skill gaps for specific roles
-
----
-
-## 🚀 Future Enhancements
-
-* PDF report download
-* Advanced NLP (spaCy integration)
-* Resume scoring improvements
-* Multi-role comparison
-* Analytics dashboard
+The backend uses `database.db` for local user storage and serves the React app when deployed from the `dist` folder.
 
 ---
 
-## 👨‍💻 Author
+## Usage / Use Cases
+
+- Optimize resumes for internship and entry-level roles
+- Evaluate resumes against job descriptions before applying
+- Identify missing technical and soft skills
+- Generate AI-backed resume improvement suggestions
+- Practice interview answers and career strategy with a chat assistant
+
+---
+
+## Future Enhancements
+
+- Add full Supabase authentication support
+- Save analysis history and user reports
+- Add analytics dashboards for resume performance over time
+- Improve AI prompts with role-specific templates
+- Add multi-user collaboration and team resume review
+
+---
+
+## Author
 
 **Santosh Kumar**
+
 B.Tech CSE Student | Aspiring Software Developer
 
 ---
 
-## ⭐ Show Your Support
+## Support
 
-If you found this project useful:
-
-👉 Star the repository
-👉 Share with others
-
----
+If this project helps your career toolkit, please star the repository and share it with other job seekers.
