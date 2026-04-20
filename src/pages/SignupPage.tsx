@@ -27,8 +27,8 @@ export default function SignupPage() {
       setError("Email is required");
       return;
     }
-    if (password.length < 4) {
-      setError("Password must be at least 4 characters");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
       return;
     }
     if (password !== confirmPassword) {
@@ -92,10 +92,10 @@ export default function SignupPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min. 4 characters"
+                placeholder="Min. 6 characters"
                 className="pl-10 bg-secondary/50"
                 required
-                minLength={4}
+                minLength={6}
               />
             </div>
           </div>
