@@ -1,5 +1,9 @@
 # 🚀 AI Resume Analyzer
 
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](https://ai-resume-analyzer-sb01.vercel.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/santoshbehera01/AI-Resume-Analyzer)
+
+
 A modern, AI-powered resume optimization platform designed for job seekers and career builders. It combines ATS-style analysis, intelligent resume scoring, PDF reporting, and a ChatGPT-like AI career assistant into a seamless full-stack application built with React and Flask.
 
 ---
