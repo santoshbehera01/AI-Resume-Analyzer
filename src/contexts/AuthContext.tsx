@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext<any>(null);
-const API_BASE = import.meta.env.VITE_API_BASE || "/api";
+const API_BASE = "http://127.0.0.1:5000";
 
 export function AuthProvider({ children }: any) {
   const [user, setUser] = useState(null);
@@ -25,26 +25,34 @@ export function AuthProvider({ children }: any) {
     if (contentType?.includes("application/json")) {
       try {
         return await response.json();
-      } catch {
-        return { message: "Invalid JSON response" };
+      } catch (e) {
+        console.error("Error parsing JSON:", e);
+        return { message: "Invalid JSON response from server" };
       }
     }
 
     const text = await response.text();
+    console.error("Non-JSON response received:", text);
     return { message: text || response.statusText || "Unexpected server response" };
   };
 
   const signUp = async (email: string, password: string) => {
     try {
+      console.log(`[Signup] Attempting to sign up user: ${email}`);
+      console.log(`[Signup] Endpoint: ${API_BASE}/signup`);
+      
       const response = await fetch(`${API_BASE}/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({ email, password }),
       });
 
+      console.log(`[Signup] Response Status: ${response.status}`);
       const data = await parseResponse(response);
+      console.log(`[Signup] Response Data:`, data);
 
       if (response.ok) {
         return { error: null };
@@ -52,21 +60,27 @@ export function AuthProvider({ children }: any) {
         return { error: data.message || "Signup failed" };
       }
     } catch (error) {
+      console.error("[Signup] Fetch error:", error);
       return { error: error instanceof Error ? error.message : "Unable to connect to server. Please try again." };
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
+      console.log(`[Login] Attempting to log in user: ${email}`);
+      
       const response = await fetch(`${API_BASE}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({ email, password }),
       });
 
+      console.log(`[Login] Response Status: ${response.status}`);
       const data = await parseResponse(response);
+      console.log(`[Login] Response Data:`, data);
 
       if (response.ok) {
         const userData = { email };
@@ -77,6 +91,7 @@ export function AuthProvider({ children }: any) {
         return { error: data.message || "Login failed" };
       }
     } catch (error) {
+      console.error("[Login] Fetch error:", error);
       return { error: error instanceof Error ? error.message : "Unable to connect to server. Please try again." };
     }
   };
