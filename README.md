@@ -92,8 +92,7 @@ Built with a modern React frontend and a Flask backend, the application delivers
 
 - Clean SaaS-style dashboard  
 - Fully responsive (mobile + desktop)  
-- Sidebar-based navigation  
-- Smooth animations & loading states 
+- Sidebar-based navigation
 - AI chat interface with quick prompts and export capabilities
 
 ---
