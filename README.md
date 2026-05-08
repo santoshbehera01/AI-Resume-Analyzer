@@ -57,7 +57,6 @@ Built with a modern React frontend and a Flask backend, the application delivers
 
 - React 18
 - TypeScript
-- Vite
 - Tailwind CSS
 - Radix UI
 - React Router DOM
