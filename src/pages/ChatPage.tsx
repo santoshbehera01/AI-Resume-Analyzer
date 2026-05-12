@@ -15,7 +15,9 @@ import ReactMarkdown from "react-markdown";
 import { useChatStorage, type Message } from "@/hooks/useChatStorage";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/career-chat`;
+// Route through the Flask backend on Render (uses VITE_API_URL, falls back to /api proxy in dev)
+const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
+const CHAT_URL = `${API_BASE}/chat`;
 
 const quickActions = [
   { label: "Improve my resume", icon: FileText, prompt: "Review my resume and give me specific, actionable improvements for each section. Focus on making bullet points stronger with metrics and action verbs." },
@@ -33,57 +35,50 @@ function getResumeContext(): { resumeText?: string; jobDescription?: string } | 
   return undefined;
 }
 
-async function streamChat({
-  messages, resumeContext, onDelta, onDone, signal,
+async function sendChatRequest({
+  messages, resumeContext, signal,
 }: {
   messages: Message[];
   resumeContext?: { resumeText?: string; jobDescription?: string };
-  onDelta: (text: string) => void;
-  onDone: () => void;
   signal?: AbortSignal;
-}) {
-  const resp = await fetch(CHAT_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-    },
-    body: JSON.stringify({ messages, resumeContext }),
-    signal,
-  });
+}): Promise<string> {
+  let resp: Response;
+  try {
+    resp = await fetch(CHAT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages, resumeContext }),
+      signal,
+    });
+  } catch (err: any) {
+    if (err?.name === "AbortError") throw err;
+    // Network-level failure (CORS, DNS, offline, etc.)
+    const isOffline = !navigator.onLine;
+    throw new Error(
+      isOffline
+        ? "You appear to be offline. Please check your internet connection."
+        : "Could not reach the AI server. The backend may be starting up — please try again in 30 seconds."
+    );
+  }
 
   if (!resp.ok) {
-    const err = await resp.json().catch(() => ({ error: "Request failed" }));
-    throw new Error(err.error || `Error ${resp.status}`);
+    let errMsg = `Server error (${resp.status})`;
+    try {
+      const errData = await resp.json();
+      errMsg = errData.error || errData.message || errMsg;
+    } catch { /* ignore parse error */ }
+    throw new Error(errMsg);
   }
-  if (!resp.body) throw new Error("No response body");
 
-  const reader = resp.body.getReader();
-  const decoder = new TextDecoder();
-  let buf = "";
-  let done = false;
-
-  while (!done) {
-    const { done: readerDone, value } = await reader.read();
-    if (readerDone) break;
-    buf += decoder.decode(value, { stream: true });
-    let idx: number;
-    while ((idx = buf.indexOf("\n")) !== -1) {
-      let line = buf.slice(0, idx);
-      buf = buf.slice(idx + 1);
-      if (line.endsWith("\r")) line = line.slice(0, -1);
-      if (line.startsWith(":") || !line.trim()) continue;
-      if (!line.startsWith("data: ")) continue;
-      const json = line.slice(6).trim();
-      if (json === "[DONE]") { done = true; break; }
-      try {
-        const parsed = JSON.parse(json);
-        const content = parsed.choices?.[0]?.delta?.content;
-        if (content) onDelta(content);
-      } catch { buf = line + "\n" + buf; break; }
-    }
+  let data: { reply?: string };
+  try {
+    data = await resp.json();
+  } catch {
+    throw new Error("The server returned an invalid response. Please try again.");
   }
-  onDone();
+
+  if (!data.reply) throw new Error("Empty response from AI. Please try again.");
+  return data.reply;
 }
 
 const ChatPage = () => {
@@ -126,37 +121,25 @@ const ChatPage = () => {
     updateMessages(chatId!, newMessages);
     setInput("");
     setIsLoading(true);
-    setIsStreaming(true);
-
-    let assistantSoFar = "";
-    const upsert = (chunk: string) => {
-      assistantSoFar += chunk;
-      const updated = [...newMessages];
-      const last = updated[updated.length - 1];
-      if (last?.role === "assistant") {
-        updated[updated.length - 1] = { ...last, content: assistantSoFar };
-      } else {
-        updated.push({ role: "assistant", content: assistantSoFar });
-      }
-      updateMessages(chatId!, updated);
-    };
+    setIsStreaming(false);
 
     const controller = new AbortController();
     abortRef.current = controller;
 
     try {
-      await streamChat({
+      const reply = await sendChatRequest({
         messages: newMessages,
         resumeContext: getResumeContext(),
-        onDelta: upsert,
-        onDone: () => { setIsLoading(false); setIsStreaming(false); },
         signal: controller.signal,
       });
+      const withReply: Message[] = [...newMessages, { role: "assistant", content: reply }];
+      updateMessages(chatId!, withReply);
     } catch (e: any) {
       if (e.name !== "AbortError") {
-        console.error(e);
-        toast.error(e.message || "Failed to get response");
+        console.error("[ChatPage] sendChatRequest error:", e);
+        toast.error(e.message || "Failed to get response. Please try again.");
       }
+    } finally {
       setIsLoading(false);
       setIsStreaming(false);
     }
